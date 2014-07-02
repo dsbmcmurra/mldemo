@@ -1,0 +1,15 @@
+<AddOnConfigs>
+Property	Value
+WindowsRun	perl bundle_parallel_ckts.pl
+Version	1.1.1
+Run	bundle_parallel_ckts.pl
+Description	Create bundled interfaces based on node-parallel circuits from user selected interfaces.\nMove constituent interfaces to ports table and circuits to PortCircuits table.
+Name	Bundle Parallel Circuits
+
+<AddOnOptions>
+Tab	Group	OptionName	Prompt	Type	Table	Range	Default
+''		interface-list-file	Interface Selection	TableSelection	Interfaces		
+''		bundled-if-prefix	Name prefix for new bundled interfaces created.	String			bundle-
+''		interface-tag	Optional interface tag used to select candidates for bundling.	String			
+''		igp-metrics	IGP metrics for bundled interfaces	DropDown		Choose min;Require equal	Choose min
+''		te-metrics	TE metrics for bundled interfaces	DropDown		Choose min;Require equal	Choose min

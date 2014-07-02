@@ -1,0 +1,193 @@
+
+# The top 5 utilized links in the network
+MaxUtilMeas	SELECT 'Max Util' AS Label, Node||'|'||Interface||'|'||RemoteNode AS Details, UtilMeas AS Value 
+MaxUtilMeas	FROM Interfaces
+MaxUtilMeas	WHERE UtilMeas != '' AND UtilMeas != 'inf' AND UtilMeas != 'INF'
+MaxUtilMeas	ORDER BY UtilMeas DESC
+MaxUtilMeas	LIMIT 5;
+
+# The total traffic
+TotalTrafficMeas	SELECT 'Total Traffic' AS Label, Sum(TraffMeas) AS Value
+TotalTrafficMeas	FROM Interfaces;
+
+# The top 5 utilized links in the network (simulated)
+MaxUtilSim	SELECT 'Max Util' AS Label, Node||'|'||Interface||'|'||RemoteNode AS Details, UtilSim AS Value 
+MaxUtilSim	FROM Interfaces
+MaxUtilSim	WHERE UtilSim != ''
+MaxUtilSim	ORDER BY UtilSim DESC
+MaxUtilSim	LIMIT 5;
+
+# The total traffic (simulated)
+TotalTrafficSim	SELECT 'Total Traffic' AS Label, Sum(TraffSim) AS Value
+TotalTrafficSim	FROM Interfaces;
+
+# Interface Up
+InterfaceUp	SELECT Node||'|'||Interface||'|'||RemoteNode AS Details
+InterfaceUp	FROM Joined_Interfaces_IP
+InterfaceUp	WHERE ((Old_Node IS NULL) AND (Node IS NOT NULL)) OR ((Old_Active = 'F') AND (Active = 'T'));
+
+# Interface Down
+InterfaceDown	SELECT Old_Node||'|'||Old_Interface||'|'||Old_RemoteNode AS Details
+InterfaceDown	FROM Joined_Interfaces_IP
+InterfaceDown	WHERE ((Old_Node IS NOT NULL) AND (Node IS NULL)) OR ((Old_Active = 'T') AND (Active = 'F'));
+
+# Capacity Change: Has to be greater than 1Mbps to be flagged
+CapacityChange	SELECT Node||'|'||Interface||'|'||RemoteNode||'    '||Old_CapacitySim||' -> '||CapacitySim AS Details
+CapacityChange	FROM Joined_Interfaces_IP
+CapacityChange	WHERE abs(Old_CapacitySim-CapacitySim)>1;
+
+# Metric Change
+MetricChange	SELECT Node||'|'||Interface||'|'||RemoteNode||'    '||Old_IGPMetric||' -> '||IGPMetric AS Details
+MetricChange	FROM Joined_Interfaces_IP
+MetricChange	WHERE (Old_IGPMetric != IGPMetric) AND (Old_Active = 'T') AND (Active = 'T');
+
+# Node Up
+NodeUp	SELECT Name AS Details
+NodeUp	FROM Joined_Nodes
+NodeUp	WHERE ((Old_Name IS NULL) AND (Name IS NOT NULL)) OR ((Old_Active = 'F') AND (Active = 'T'));
+
+# Node Down
+NodeDown	SELECT Old_Name AS Details
+NodeDown	FROM Joined_Nodes
+NodeDown	WHERE ((Old_Name IS NOT NULL) AND (Name IS NULL)) OR ((Old_Active = 'T') AND (Active = 'F'));
+
+#--------- Other queries you may find useful -----------
+# un-comment to use
+
+#------- LSPActualPathChange ----------
+#------- Begin -------
+
+#CreatNewHopsTable	create temporary table NewHops(LSP,Source,PathOption,Path);
+
+#CreatOldHopsTable	create temporary table OldHops(LSP,Source,PathOption,Path);
+
+#InsertOldPath	insert into OldHops select LSP,Source,PathOption,concat_ordered(Step,"{"||Node||"."||Interface||"}","->")
+#InsertOldPath	from Old_ActualPathHops group by LSP,Source,PathOption;
+
+#InsertNewPath	insert into NewHops select LSP,Source,PathOption,concat_ordered(Step,"{"||Node||"."||Interface||"}","->")
+#InsertNewPath	from New_ActualPathHops group by LSP,Source,PathOption;
+
+#CreateOldHopIndex	create index OldHopsLSP on NewHops (LSP,Source,PathOption);
+
+#CreateNewHopIndex	create index NewHopsLSP on OldHops (LSP,Source,PathOption);
+
+#LSPActualPathChange	select NewHops.LSP,OldHops.Path,NewHops.Path 
+#LSPActualPathChange	from NewHops, OldHops
+#LSPActualPathChange	where OldHops.LSP=NewHops.LSP and OldHops.Source=NewHops.Source and OldHops.PathOption is NewHops.PathOption and OldHops.Path!=NewHops.Path;
+
+#-------- End LSPActualPathChange -------
+
+
+#------ Non IP Interface Changes --------
+# The following queries don't use the Joined_Interfaces_IP
+# table and use Joined_Interfaces table so any change in
+# Node Name or Name (interface name) will show up as a new
+# interface
+
+#------- Begin -------
+
+
+# Interface Up
+#InterfaceUp	SELECT Node||'|'||Interface||'|'||RemoteNode AS Details
+#InterfaceUp	FROM Joined_Interfaces
+#InterfaceUp	WHERE ((Old_Node IS NULL) AND (Node IS NOT NULL)) OR ((Old_Active = 'F') AND (Active = 'T'));
+
+# Interface Down
+#InterfaceDown	SELECT Old_Node||'|'||Old_Interface||'|'||Old_RemoteNode AS Details
+#InterfaceDown	FROM Joined_Interfaces
+#InterfaceDown	WHERE ((Old_Node IS NOT NULL) AND (Node IS NULL)) OR ((Old_Active = 'T') AND (Active = 'F'));
+
+# Capacity Change: Has to be greater than 1Mbps to be flagged
+#CapacityChange	SELECT Node||'|'||Interface||'|'||RemoteNode||'    '||Old_CapacitySim||' -> '||CapacitySim AS Details
+#CapacityChange	FROM Joined_Interfaces
+#CapacityChange	WHERE abs(Old_CapacitySim-CapacitySim)>1;
+
+# Metric Change
+#MetricChange	SELECT Node||'|'||Interface||'|'||RemoteNode||'    '||Old_IGPMetric||' -> '||IGPMetric AS Details
+#MetricChange	FROM Joined_Interfaces_IP
+#MetricChange	WHERE (Old_IGPMetric != IGPMetric) AND (Old_Active = 'T') AND (Active = 'T');
+
+#-------- End Non IP Interface Changes -------
+
+
+#------ SNMP Errors --------
+# Uncomment the following lines if you like to see Nodes that experienced
+# SNMP errors during the collection process
+
+#------- Begin SNMP Errors section -------
+
+# SNMP Errors
+#SnmpErrors	SELECT Name||':error:'||NetIntSNMP_Error AS Details
+#SnmpErrors	FROM Nodes
+#SnmpErrors	WHERE (NetIntSNMP_Error IS NOT NULL);
+
+#-------- End SNMP Errors section -------
+
+###################################################
+#####          Index Creation Guide          ######
+###################################################
+
+# Basics:
+
+# In the summary format file, you can put any SQL statement. The statements are
+# executed in order. If a statement produces no results, then its result is not
+# put in the output summary file. Given this, you can put "create index" queries
+# at the top of the summary format file as if they were the select statements.
+# You should name each of them something unique, also.
+
+# When to create indexes:
+# Creating an index has a performance penalty. Only create an index if it will
+# help multiple queries run. If multiple queries use the same column, then that
+# is a candidate for indexing (but not always).
+
+# How to determine if an index will help:
+# In the default_timeplot_summary_format.txt file, I noticed two queries that
+# both operate on the Joined_Interfaces table, and the Node, Old_Node, Active,
+# and Old_Active columns. The only difference between the queries is the desired
+# value of those columns. Since they have a lot in common, they're a good
+# candidate for indexing. Also, the  Joined_ tables are actually views, so the
+# index must consider the query that the view operates.
+
+# For Joined_Interfaces, the actual query uses:
+#     Node=Old_Node and Interface=Old_Interface
+
+# Thus the index won't help unless it also includes these columns (two indexes
+# can't be used at once).
+
+# As a result, I've determined that an index with the columns Node, Interface,
+# and Active will help.
+
+# Creating the index:
+
+# As mentioned, you can't make indexes on views, it must be on the tables they
+# are based on (in this case, Interfaces and Old_Interfaces. You also need to
+# specify the attached SQLite db (new in 4.2 as an implementation detail). Since
+# the main db is implied, you need to only specify the "old" database:
+
+# create index [db.]IndexName on Table (columns);
+# create index on old.Old_Interfaces_index1 on Old_Interfaces
+# (Node,Interface,Active);
+
+# create index Interfaces_index1 on Interfaces (Node,Interface,Active);
+
+# Testing:
+# The unix "time" command is useful for this. Inserting into a clean
+# archive is always much faster than inserting into a populated one, so when
+# comparing the performance of your change, always compare on one or the other.
+
+# Creating an index is costly, even if there should be a savings, it might be
+# negligible. The following two indexes help by only about 1s of execution time:
+
+# NewNdNodeIndex    create index New_Nodes_NodeIndex on New_Nodes (Name,Active);
+# OldNdNodeIndex    create index old.Old_Nodes_NodeIndex on Old_Nodes
+# (Name,Active);
+
+# Also:
+# According to the SQLite manual, filling a table and then creating the index is
+# faster than creating the index and then filling a table (thus incrementally
+# expanding the index).
+
+############### End if Index Creation Guide ###############
+
+
+

@@ -1,0 +1,386 @@
+<Network>
+Property	Value
+Title	
+Version	5.6
+
+<Sites>
+Name	DisplayName	LocationCode	Protected	Active	Failed	Longitude	Latitude	Tags
+A			F	T	F	0.0	0.0	
+B			F	T	F	0.0	0.0	
+C			F	T	F	0.0	0.0	
+
+<Nodes>
+Name	Site	Function	Protected	Active	Type	ISISArea	AS	BGPID	IPAddress	Description	Vendor	Model	OS	IPManage	CostInitial	CostPerPeriod	LastTemplateUpdate	Failed	Tags	NetIntSNMP_Error	NetIntRE0CPU1m	NetIntRE0CPU5m	NetIntRE0Mem	NetIntRE1CPU1m	NetIntRE1CPU5m	NetIntRE1Mem
+A	A	core	F	T	physical						Cisco	ASR9K	IOS XR 4.2.0		0.0	0.0		F								
+B	B	core	F	T	physical						Cisco	ASR9K	IOS XR 4.2.0		0.0	0.0		F								
+C	C	core	F	T	physical						Juniper	MX960	JUNOS 11.4R7.5		0.0	0.0		F								
+
+<Circuits>
+Name	NodeA	InterfaceA	NodeB	InterfaceB	Capacity	Delay	Distance	L1CircuitName	L1CircuitNodeA	L1CircuitNodeB	Protected	Active	Failed	CostInitial	CostPerPeriod	ParallelGroupName	LastTemplateUpdate	Tags
+	A	to_C	C	to_A	10000.0	1.0	0.0				F	T	F	0.0	0.0			
+A_B	A	to_B	B	to_A	10000.0	1.0	0.0				F	T	F	0.0	0.0			
+C(bundle-0)-B(bundle-0)	C	bundle-0	B	bundle-0							F	T	F	0.0	0.0			
+
+<Ports>
+Node	Port	Description	MACAddress	Interface	Capacity	Active	Failed	Protected	Tags	NetIntPortIndex	NetIntInterfaceIndex
+C	to_B			bundle-0	10000.0	T	F	F			
+B	to_C			bundle-0	10000.0	T	F	F			
+C	to_B[1]			bundle-0	10000.0	T	F	F			
+B	to_C[1]			bundle-0	10000.0	T	F	F			
+
+<PortCircuits>
+Name	Description	NodeA	NodeB	PortA	PortB	L1CircuitName	L1CircuitNodeA	L1CircuitNodeB	Capacity	Active	Failed	Protected	Tags
+B_C		B	C	to_C	to_B					T	F	F	
+B_C		B	C	to_C[1]	to_B[1]					T	F	F	
+
+<Interfaces>
+Node	Interface	IGPMetric	MetricISISLevel1	Capacity	PolicyGroup	TEMetric	TEEnabled	ResvBW	ResvBWPercent	PCMinLinks	PCMinBW	FRREnabled	Area	ISISLevel	Affinities	Description	NetIntIndex	NetIntContainerIndex	NetIntType	NetIntAdminStatus	NetIntOperStatus	NetIntSubnet	Tags
+A	to_C	1		10000.0	Default		T					T	0.0.0.0	Level2									
+C	to_A	1		10000.0	Default		T					T	0.0.0.0	Level2									
+A	to_B	1		10000.0	Default		T					T	0.0.0.0	Level2									
+B	to_A	1		10000.0	Default		T					T	0.0.0.0	Level2									
+C	bundle-0	1			Default	1	T					T		Level2									
+B	bundle-0	1			Default	1	T					T		Level2									
+
+<ServiceClasses>
+Name
+Default
+
+<Demands>
+Name	Source	Destination	ServiceClass	Active	PrivateLSPName	PrivateLSPSource	Topology	LatencyBound	Tags
+''	A	A	Default	T					
+''	A	B	Default	T					
+''	A	C	Default	T					
+''	B	A	Default	T					
+''	B	B	Default	T					
+''	B	C	Default	T					
+''	C	A	Default	T					
+''	C	B	Default	T					
+''	C	C	Default	T					
+
+<TrafficLevels>
+Name
+Default
+
+<DemandTraffic>
+Name	Source	Destination	ServiceClass	TrafficLevel	Traffic	GrowthPercent
+''	A	A	Default	Default	1000.0	
+''	A	B	Default	Default	1000.0	
+''	A	C	Default	Default	1000.0	
+''	B	A	Default	Default	1000.0	
+''	B	B	Default	Default	1000.0	
+''	B	C	Default	Default	1000.0	
+''	C	A	Default	Default	1000.0	
+''	C	B	Default	Default	1000.0	
+''	C	C	Default	Default	1000.0	
+
+<PlotLayouts>
+Name	LayoutSite	PlotLayoutType
+Default		Design
+Default	A	
+Default	B	
+Default	C	
+
+<PlotLayoutElements>
+PlotLayoutName	LayoutSite	ElementSite	ElementNode	ElementInterface	ElementL1Node	X	Y	Shown	LabelDir
+Default		A				579.0	64.0	T	north
+Default		B				466.0	208.0	T	north
+Default		C				700.0	207.0	T	north
+Default	A		A			0.0	0.0	T	north
+Default	B		B			0.0	0.0	T	north
+Default	C		C			0.0	0.0	T	north
+
+<PlotLayoutOptions>
+PlotLayoutName	PlotLayoutType	Property	Value
+Default	Common	AntiAliasedLines	T
+Default	Common	CanvasGeographicImage	
+Default	Common	CanvasSchematicMap	OutlineMap
+Default	Common	CanvasType	Schematic
+Default	Common	HideL1SitesL3View	T
+Default	Common	HideL3SitesL1View	T
+Default	Common	L1LinkText	None
+Default	Common	L1LinkWidth	5
+Default	Common	LongitudeBoundary	-180.00
+Default	Common	ShowPointertoRemoteNodes	T
+Default	Common	TransparencyEffects	T
+Default	Design	CircuitFormat	InterfaceNexttoNode
+Default	Design	CircuitWidthIncrease	2
+Default	Design	CircuitWidthMinBelow	580
+Default	Design	CircuitWidthMinimum	5
+Default	Design	InterfaceText	None
+Default	Design	MaximumDisplayWidthParallelCircuits	50
+Default	Design	ParallelGrouping	None
+Default	Design	ShowQoSPolicyViolations	T
+Default	Design	UtilizationColors	#add8e6,30,#90ee90,50,#ffff00,80,#ffa500,90,#ff0000,100,#800080
+Default	Weathermap	CircuitFormat	InterfaceNexttoNode
+Default	Weathermap	CircuitWidthIncrease	0
+Default	Weathermap	CircuitWidthMinBelow	580
+Default	Weathermap	CircuitWidthMinimum	3
+Default	Weathermap	InterfaceText	None
+Default	Weathermap	MaximumDisplayWidthParallelCircuits	60
+Default	Weathermap	ParallelGrouping	None
+Default	Weathermap	UtilizationColors	#6d82f8,30,#34c92f,50,#f7e813,80,#fe792a,90,#ff1e1a,100,#d902ff
+
+<Reports>
+Name	DateCreated
+Add-On History	Wed Mar 12 15:52:17 2014
+Bundle Parallel Circuits	Wed Mar 12 15:52:21 2014
+Design History	Sun Apr  6 16:29:07 2014
+
+<ReportSections>
+Name	Report	Type	DisplayIndex	DisplayName	Contents
+Add-on Run	Add-On History	TEXT			ADD-ON: Bundle Parallel Circuits\n========================================================\n\nAdd-on ran on: Wed Mar 12 15:52:17 2014\n\nOptions\n-------\nInterface Selection                             : (Table Selection)\nName prefix for new bundled interfaces created. : bundle-\nIGP metrics for bundled interfaces              : Choose min\nTE metrics for bundled interfaces               : Choose min\n
+Report Summary	Bundle Parallel Circuits	TEXT		Report Summary	Total Number of Interfaces Evaluated:            4\nNumber of Input Interfaces Successfully Bundled: 4\nNumber of Bundled Interfaces Created:            2\n
+dmd_mesh_creator	Design History	TEXT			OPTIONS\n--------------------------------------------------------\nplan-file: sample-bundled.txt (command line)\nout-file: sample-bundled.txt (command line)\nhelp: false (default)\noptions-file:  (default)\nversion: false (default)\nno-global-options: false (default)\nsuppress-progress: true (default)\nverbosity: 30 (default)\nlog-file:  (default)\nsimple-txt-out-file: false (default)\nsource-list: nodes,as,endpoints (default)\nsource-nodes-table:  (default)\nsource-sites-table:  (default)\nsource-as-table:  (default)\nsource-endpoints-table:  (default)\ndemandmesh-table:  (default)\nout-demandmesh-table:  (default)\nout-demands-table:  (default)\ndest-equals-source: true (default)\ndest-list: nodes,as,endpoints (default)\ndest-nodes-table:  (default)\ndest-sites-table:  (default)\ndest-as-table:  (default)\ndest-endpoints-table:  (default)\nboth-directions: true (default)\nexternal-AS-interface-endpoints: true (default)\nrespect-as-relationships: true (default)\nservice-class:  (default)\ntopology:  (default)\nset-name:  (default)\nset-tag-list:  (default)\ndelete-same-name: false (default)\ninclude-demands-to-self: true (default)\nexternal-mesh: respect (default)\n
+
+<NetworkOptions>
+Option	Value
+
+<AS>
+ASN	Name	Type	ExternalMesh	Description	Tags
+
+<ASRelationships>
+FromAS	ToAS	RoutingPolicy
+
+<NodeSiteMappingRules>
+Order	NodeMatches	SiteExpression
+
+<PortTraffic>
+Node	Port	TrafficLevel	Queue	TraffMeas
+
+<AdminGroups>
+Affinity	Name
+
+<L1Links>
+Name	Description	NodeA	NodeB	Metric	Distance	Delay	ResvBW	Capacity	Protected	Active	Failed	Tags
+
+<L1Nodes>
+Name	Description	Site	Protected	Active	Failed	Tags
+
+<L1Circuits>
+Name	NodeA	NodeB	Backup	Distance	Delay	BW	DisjointGroup	DisjointPriority	SetupPriority	RerouteOnFailure	Tags
+
+<L1CircuitHops>
+Name	NodeA	NodeB	Type	Step	HopNodeA	HopNodeB	HopLink
+
+<Queues>
+Name
+
+<InterfaceQueues>
+Node	Interface	Queue	Priority	Weight	PoliceLimit
+
+<P2MPLSPs>
+Name	Source	DisjointGroup	DisjointPriority	Tags
+
+<LSPs>
+Name	Source	Destination	NetIntDestination	SetupBW	SetupPri	HoldPri	Active	Private	Topology	Class	P2MPLSP	Include	IncludeAny	Exclude	Loadshare	HopLimit	ActivePath	MetricType	Metric	FRREnabled	FRRInterface	NetIntFRRInterface	Description	DisjointGroup	DisjointPriority	PCEP	Tags	IncludeAnyDemandsTags	NetIntType	NetIntIndex	NetIntAdminStatus	NetIntOperStatus	NetIntActivePath	NetIntLastPathChange	NetIntTunnelInterfaceId
+
+<LSPPaths>
+LSP	Source	PathName	SetupBW	PathOption	SetupPri	HoldPri	Include	IncludeAny	Exclude	HopLimit	Standby	Active
+
+<NamedPaths>
+Name	Source	Active
+
+<NamedPathHops>
+Name	Source	Step	Node	Interface	NetIntHop	Type
+
+<ActualPathHops>
+LSP	Source	PathOption	Step	Node	Interface	NetIntHop
+
+<ServiceClassPolicy>
+ServiceClass	InterfacePolicyGroup	ServiceUtilBound	ServiceWCUtilBound
+
+<ServiceClassQueueMapping>
+ServiceClass	Queue
+
+<MulticastFlows>
+S	G	Tags
+
+<MulticastFlowDestinations>
+S	G	Destination
+
+<ExternalEndpoints>
+Name	Tags
+
+<ExternalEndpointMembers>
+Endpoint	Member	Priority	TrafficBalancePercent	Type	Protected	Active	Failed
+
+<MulticastFlowHops>
+S	G	Node	Interface
+
+<MulticastFlowTraffic>
+S	G	TrafficLevel	Queue	TraffMeas
+
+<MulticastFlowExternalHops>
+S	G	Direction	Node	Interface	Index
+
+<NodeTraffic>
+Node	TrafficLevel	Queue	SrcTraffMeas	DestTraffMeas
+
+<InterfaceTraffic>
+Node	Interface	TrafficLevel	Queue	TraffMeas	GrowthPercent
+
+<InterfaceIPAddresses>
+Node	Interface	IPv4Address	IPv4PrefixLength	IPv6Address	IPv6PrefixLength
+
+<LSPTraffic>
+Name	Source	TrafficLevel	Queue	TraffMeas
+
+<SRLGs>
+Name	Active	Description	Failed
+
+<SRLGNodes>
+SRLG	Node
+
+<SRLGCircuits>
+SRLG	NodeA	InterfaceA	NodeB	InterfaceB
+
+<SRLGPorts>
+SRLG	Node	Port
+
+<SRLGPortCircuits>
+SRLG	NodeA	PortA	NodeB	PortB
+
+<SRLGExternalEndpointMembers>
+SRLG	EndPoint	Member
+
+<SRLGL1Nodes>
+SRLG	L1Node
+
+<SRLGL1Links>
+SRLG	NodeA	NodeB	Name
+
+<Flows>
+FlowID	FromType	ToType	Tags
+
+<FlowFrom>
+FlowID	Node
+
+<FlowTo>
+FlowID	Node
+
+<FlowTraffic>
+FlowID	TrafficLevel	Queue	TraffMeas
+
+<PlotSiteToSiteOptions>
+SiteA	SiteB	PlotLayoutName	InterfaceStyle
+
+<PlotNodeToNodeOptions>
+NodeA	NodeB	PlotLayoutName	InterfaceStyle
+
+<PlotViewInterfaces>
+PlotView	Node	Interface	Color	FillPercent	FillBound
+
+<ReportTableInteractions>
+Report	Section	Reference	ReferenceType	Table	SourceJoinColumns	DestJoinColumns	ObjectColumn
+
+<DemandGroupings>
+Name	SourceSiteEquals	SourceASEquals	SourceNodeEquals	SourceEndpointEquals	DestSiteEquals	DestASEquals	DestNodeEquals	DestEndpointEquals	DemandNameEquals	ServiceClassEquals	SourceNodeMatches	DestNodeMatches	TagsInclude	SourceSiteTagsInclude	DestSiteTagsInclude	SourceNodeTagsInclude	DestNodeTagsInclude	SourceASTagsInclude	DestASTagsInclude	GrowthTrafficTotal	GrowthTrafficPercent	GrowthTrafficInc
+
+<VPNs>
+Name	Type	Connectivity	ServiceClass	Tags
+
+<VPNNodes>
+Node	Type	Name	VPN	Description	RTImport	RTExport	RD	Tags
+
+<VPNNodesTraffic>
+Node	Type	Name	TrafficLevel	Queue	SrcTraffMeas	DestTraffMeas
+
+<Topologies>
+Name
+
+<InterfaceTopologies>
+Node	Interface	Topology
+
+<LSPClasses>
+Name
+
+<ServiceClassLSPClassMapping>
+ServiceClass	Priority	LSPClass
+
+<NetIntRouters>
+SysName	IpAddress	Vendor	Description	SwDesc	EntityDesc	MulticastMIB	RsvpMIB	LdpMIB	FlowSamplingRate	ServiceClasses	ServiceClassIndexes	RE0CPU1m	RE0CPU5m	RE0Mem	RE1CPU1m	RE1CPU5m	RE1Mem
+
+<NetIntInterfaces>
+Node	Interface	IGPMetric	MetricISISLevel1	Capacity	PolicyGroup	TEMetric	TEEnabled	ResvBW	PCMinLinks	PCMinBW	FRREnabled	Area	ISISLevel	Affinities	Description	NetIntIndex	NetIntContainerIndex	NetIntType	NetIntAdminStatus	NetIntOperStatus	NetIntSubnet	Type	Aggregated	AggregatedInside	OnTopOf	NetIntNetMask	NetIntSrlg	VPNNode	Place	IPAddress	FlowReceived
+
+<NetIntInterfaceTraffic>
+Node	Interface	TrafficLevel	Queue	TraffMeas	GrowthPercent	NetIntInTraffMeas	NetIntPacketsOut	NetIntPacketsIn	NetIntErrorPacketsIn	NetIntDropPacketsOut	NetIntDropTraffOut	FlowTrafficEstimate	FlowTraffic	FlowTrafficRatio
+
+<NetIntIfMeasurements>
+Node	MeasType	NetIntIndex	Interface	Queue	OutOctets_avg	OutOctets_samples	InOctets_avg	InOctets_samples	OutPackets_avg	OutPackets_samples	InPackets_avg	InPackets_samples	InErrors_avg	InErrors_samples	OutDiscards_avg	OutDiscards_samples	OutOctetDiscards_avg	OutOctetDiscards_samples
+
+<NetIntHistory>
+Time	Revision	ToolRun	Options	Comment
+
+<NetIntBgpSpeakers>
+Router	BgpId	As
+
+<NetIntBgpPeers>
+Router	RemoteAddr	PeerId	As	State	Status	LocalAddr	ExitInterface	MultihopExit
+
+<NetIntIpAddresses>
+Node	IpAddress	NetIntIndex	NetPrefixLength	AddressFamily
+
+<NetIntSubnets>
+Node	Subnet	IGPmetric	RemoteNode
+
+<NetIntMulticastFlows>
+Node	S	G	NetMask	Index
+
+<NetIntMulticastFlowHops>
+Node	S	G	NetMask	Index
+
+<NetIntMulticastMeasurements>
+Node	MeasType	S	G	OutOctets_avg	OutOctets_samples
+
+<NetIntLspMeasurements>
+Node	MeasType	NetIntIndex	OutOctets_avg	OutOctets_samples
+
+<NetIntLdp>
+Node	DestNode	LspID	NetMask	Index	OutIfIndex
+
+<NetIntLdpMeasurements>
+Node	MeasType	NetIntIndex	OutOctets_avg	OutOctets_samples	TransitOctets_avg	TransitOctets_samples	InOctets_avg	InOctets_samples
+
+<NetIntInterASFlows>
+SourceAS	FromNeighborAS	IngressNode	IngressInterface	EgressNode	EgressInterface	ToNeighborAS	ASPath	DestinationAS	IPProtocolVersion	Traffic
+
+<NetIntMacAddresses>
+Node	NetIntIndex	MAC	Interface	IPv4Address	IPv6Address
+
+<NetIntMacMeasurements>
+Node	MeasType	NetIntIndex	MAC	OutOctets_avg	OutOctets_samples	InOctets_avg	InOctets_samples
+
+<NetIntMacTraffic>
+Node	Interface	MAC	TrafficLevel	OutTraffMeas	InTraffMeas
+
+<NetIntPlanFileGenerationTime>
+Time
+
+<SimAnalysisOptions>
+Option	Value
+
+<SimAnalysisWCUtilInterfaces>
+FailureSet	WCTraffLevel	Node	Interface	WCServiceClass	WCFailure	WCTraffic	WCUtil	WCQoSBound	DiffWCQoSBound	DiffWCQoSBoundPerc	SimulatedCapacity	ServiceCapacity
+
+<SimAnalysisWCUtilVPNs>
+Name	Type	FailureSet	WCUtil	WCFailure	WCTraffLevel	WCQoSViolation	WCQoSViolationPerc
+
+<SimAnalysisWCLatencyDemands>
+FailureSet	Name	Source	Destination	ServiceClass	WCFailure	WCLatency
+
+<SimAnalysisFailureImpacts>
+FailureSet	TraffLevel	ServiceClass	Failure	FailureImpactNode	FailureImpactInterface	QoSViolationSimPercent	FailureImpactUsage	FailureImpactSimCap	FailureImpactServiceCap	FailureImpactPotentialCap	FailureImpactNoFailEffCap
+
+<SimCacheInterfaces>
+Node	Interface	TrafficLevel	ServiceClass	Queue	SimTraffic	SimCap	ServiceCap	NoFailCap
+
+<SimCacheLSPReservation>
+Node	Interface	SimTraffic
+
+<ColumnData>
+Table	Column	Type	Decimals	DisplayName	Tooltip	Shown
+
+<Hashes>
+Name	Value

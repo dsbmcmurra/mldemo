@@ -1,0 +1,1 @@
+rm /opt/cariden/bin/nvsdemo/bin/nvsdemo.log; perl mldemo.pl -plan-file plan56.tiny.txt -config-file brian_config.txt -start-date 140101_0000 -stop-date 140401_0000 -verbosity 60 -log-file nvsdemo.log -verbosity 60

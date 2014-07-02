@@ -1,0 +1,238 @@
+# Default mldemo.pl configuration file.
+#
+# This file requires three tables:
+# <PreparePlanfileSteps> - What steps are used to prepare a plan file
+# <ResetArchiveSteps>    - What steps are used to reset the archive
+# <GenerateDataSteps>    - What steps are used to generate data in an archive, per snapshot.
+#
+# Each table has the same columns:
+# Order    - What is the numeric order of the steps.
+# Command  - What executable is run during this step.
+# ArgTable - What table defines the arguments to this command.
+# STDIN    - What file should be used as the command's standard input. Dash can be used to mean the rolling buffer.
+# STDOUT   - What file should be used for the standard output. Dash can be used to write to rolling buffer.
+# STDERR   - What file should be used for writing to standard error.
+#
+# For each set of steps, there is a rolling buffer. For the prepare planfile stage, the buffer starts off empty.
+# For the reset archive stage, the rolling buffer starts off empty. For the generate data stage, the rolling buffer
+# starts out as the baseline planfile for each snapshot.
+#
+# Command argument tables can be shared between commands. All command argument tables must have these columns:
+# Key   - For named arguments, this is the argument name.
+# Value - This is the argument value.
+# Either column can be left empty. If both are empty, the row is ignored.
+#
+# The configfile also supports limited variable expansion.
+# $arg{arg-name} - Gets replaced with whatever value -arg-name was passed to mldemo.pl
+# $env{ENV_NAME} - Gets replaced with whatever value the environment variable ENV_NAME has
+# ${mlbin}       - Gets replaced with the directory where mldemo.pl is found.
+# ${snaptime}    - Gets replaced with the Cariden timestamp for the current snapshot (for each snapshot)
+#
+
+<PreparePlanfileSteps>
+Order	Command	ArgTable	STDIN	STDOUT	STDERR
+1	${mlbin}/setIfNames.pl	<SetIfNames>			
+2	${mlbin}/BundleParallelCircuits/bundle_parallel_ckts.pl	<Bundle>			
+3	${mlbin}/setLagNames.pl	<SetLagNames>		-	
+4	${mlbin}/prepare_planfile.pl	<PreparePlanfileArguments>	-	-	
+5	${mlbin}/lagify.pl	<Lagify>	-	
+6	${mlbin}/prepare_planfile2.pl	<PreparePlanfile2>		-
+7	${mlbin}/set_ip_addresses.pl	<SetIPAddressesArguments>	-	-	
+8	${mlbin}/set_cpu_and_ram.pl	<SetCPUAndRAMArguments>	-	-	
+9	rm	<RmPlan>
+
+
+<ResetArchiveSteps>
+Order	Command	ArgTable	STDIN	STDOUT	STDERR
+#1	mld	<StopMLD>
+#2	sleep	<Sleep1>
+#3	embedded_web_server	<StopEWS>
+#4	sleep	<Sleep5>
+#5	rm	<RemoveMLData>
+6	mkdir	<CreateMLData>
+7	mkdir	<CreateMLDataDir>
+#8	rm	<RemoveMLArchive>
+9	mkdir	<CreateArchive>
+10	archive_init	<InitMLArchive>
+#11	mld	<StartMLD>
+#12	sleep	<Sleep1>
+#13	embedded_web_server	<StartEWS>
+
+<GenerateDataSteps>
+Order	Command	ArgTable	STDIN	STDOUT	STDERR
+1	${mlbin}/vary_traffic.pl	<VaryTrafficArguments>	-	-	
+2	${mlbin}/sim_traff_to_meas_traff.pl	<SimTraffToMeasTraffArguments>	-	-
+4	export_routes	<ExportRoutesArguments>	-
+5	${mlbin}/lsp_hops_to_actual_path_hops.pl	<LSPHopsToActualHops>
+6	rm	<RemoveRoutesTempfile>
+7	table_replace	<ReplaceLSPPathHops>	-	
+8	rm	<RemoveHopsTempfile>
+9	ml_insert_plan	<InsertPlan>	-
+10	cp	<CopyToArchive>	
+#10	archive_insert	<ArchiveInsert>	-	-
+11	sleep	<Sleep1>
+
+<SetIfNames>
+Key	Value
+-plan-file	$arg{plan-file}
+-out-file	${mlbin}/plan.txt
+
+<Bundle>
+Key	Value
+-plan-file	${mlbin}/plan.txt
+-out-file	${mlbin}/plan.txt
+-interface-list-file	${mlbin}/plan.txt
+-interface-tag	"LAG"
+
+<RmPlan>
+Key	Value
+-f
+${mlbin}/plan.txt
+
+<SetLagNames>
+Key	Value
+-plan-file	${mlbin}/plan.txt
+-out-file	-
+
+<PreparePlanfileArguments>
+Key	Value
+-plan-file	-
+-out-file	-
+
+<Lagify>
+Key	Value
+-plan-file	-
+-out-file	${mlbin}/plan.txt
+
+<PreparePlanfile2>
+Key	Value
+-plan-file	${mlbin}/plan.txt
+-out-file	-
+
+<SetIPAddressesArguments>
+Key	Value
+-plan-file	-
+-out-file	-
+
+<SetCPUAndRAMArguments>
+Key	Value
+-plan-file	-
+-out-file	-
+-seed	$arg{rand-seed}
+
+
+
+<StopMLD>
+Key	Value
+-action	stop
+-datastore	$env{CARIDEN_ROOT}/data/demo_mldata/datastore
+
+<StopEWS>
+Key	Value
+-action	stop
+
+<Sleep1>
+Key	Value
+1
+
+<Sleep5>
+Key	Value
+5
+
+<RemoveMLData>
+Key	Value
+-rf
+$env{CARIDEN_ROOT}/data/demo_mldata
+
+<CreateMLData>
+Key	Value
+$env{CARIDEN_ROOT}/data
+
+<CreateMLDataDir>
+Key	Value
+$env{CARIDEN_ROOT}/data/demo_mldata
+
+<RemoveMLArchive>
+Key	Value
+-rf
+$env{CARIDEN_ROOT}/archives/mldemo
+
+<CreateArchive>
+Key	Value
+$env{CARIDEN_ROOT}/archives
+
+<InitMLArchive>
+Key	Value
+-archive	$env{CARIDEN_ROOT}/archives/mldemo
+-timeplot-summary-format	${mlbin}/default_archive.txt
+
+<StartMLD>
+Key	Value
+-action	start
+-datastore $env{CARIDEN_ROOT}/data/demo_mldata/datastore
+
+<StartEWS>
+Key	Value
+-action	start
+
+
+
+<VaryTrafficArguments>
+Key	Value
+-plan-file	-
+-out-file	-
+-state-file	${mlbin}/state.txt
+-start-date	$arg{start-date}
+-snap-date	${snaptime}
+-seed	$arg{rand-seed}
+
+<SimTraffToMeasTraffArguments>
+Key	Value
+-plan-file	-
+-out-file	-
+-state-file	${mlbin}/state.txt
+
+<ExportRoutesArguments>
+Key	Value
+-plan-file	-
+-out-file	${mlbin}/../../work/routes.txt
+-object	lsps
+
+<LSPHopsToActualHops>
+Key	Value
+-routes-file	${mlbin}/../../work/routes.txt
+-out-file	${mlbin}/../../work/hops.txt
+
+<RemoveRoutesTempfile>
+Key	Value
+-f
+${mlbin}/../../work/routes.txt
+
+<ReplaceLSPPathHops>
+Key	Value
+-table-file	-
+-out-file	${mlbin}/../../work/out_plan_${snaptime}.txt
+-replace-table-file	${mlbin}/../../work/hops.txt
+
+<RemoveHopsTempfile>
+Key	Value
+-f
+${mlbin}/../../work/hops.txt
+
+<InsertPlan>
+Key	Value
+-plan-file	-
+-datastore	$env{CARIDEN_ROOT}/data/demo_mldata/datastore
+-time	${mlsnaptime}
+-extract-simulated-data	true
+
+<CopyToArchive>
+Key	Value
+-p
+${mlbin}/../../work/out_plan_${snaptime}.txt	$env{CARIDEN_ROOT}/archives/mldemo/${snaptime}.txt
+
+<ArchiveInsert>
+Key	Value
+-plan-file	${mlbin}/../../work/out_plan_${snaptime}.pln
+-archive	$env{CARIDEN_ROOT}/archives/mldemo
+-time	${snaptime}
